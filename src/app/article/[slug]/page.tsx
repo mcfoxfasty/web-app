@@ -14,7 +14,7 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const article = await storage.getArticleBySlug(params.slug);
 
-  if (!article) {
+  if (!article || !article.published) {
     return {};
   }
 
@@ -48,7 +48,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ArticlePage({ params }: Props) {
   const article = await storage.getArticleBySlug(params.slug);
 
-  if (!article) {
+  if (!article || !article.published) {
     notFound();
   }
 

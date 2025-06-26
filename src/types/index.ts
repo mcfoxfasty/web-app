@@ -6,7 +6,7 @@ export type Article = {
   content: string; // HTML content
   metaDescription: string;
   coverImage: string;
-  author: 'AI';
+  author: 'AI News';
   affiliateLink: string;
   createdAt: string; // ISO string
   updatedAt: string; // ISO string

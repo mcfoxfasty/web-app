@@ -1,40 +1,39 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import axios from 'axios';
+import { useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Wand2 } from 'lucide-react';
-import type { Article } from '@/types';
 import { CATEGORIES } from '@/lib/config';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { generateArticleAction } from '@/app/(admin)/actions';
 
 export function ArticleGenerator() {
   const [loadingCategory, setLoadingCategory] = useState<string | null>(null);
-  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
 
   const handleGenerate = async (category: string) => {
     setLoadingCategory(category);
-    try {
-      const response = await axios.post<Article>('/api/generate-article', { category });
-      toast({
-        title: 'Article Generated!',
-        description: `New article "${response.data.title}" has been created.`,
-      });
-      router.refresh(); // Refresh page to show new article
-    } catch (error) {
-      console.error('Failed to generate article:', error);
-      toast({
-        variant: 'destructive',
-        title: 'Generation Failed',
-        description: 'Could not generate a new article. Please try again.',
-      });
-    } finally {
+    startTransition(async () => {
+      const result = await generateArticleAction(category);
+      if (result.success) {
+        toast({
+          title: 'Article Generated!',
+          description: `New article "${result.article?.title}" has been created as a draft.`,
+        });
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Generation Failed',
+          description: result.error,
+        });
+      }
       setLoadingCategory(null);
-    }
+    });
   };
+
+  const isLoading = isPending || loadingCategory !== null;
 
   return (
     <Card>
@@ -44,7 +43,7 @@ export function ArticleGenerator() {
           <span>Article Generator</span>
         </CardTitle>
         <CardDescription>
-          Select a category to generate a new AI-powered news article.
+          Select a category to generate a new AI-powered news article. It will be saved as a draft.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -53,7 +52,7 @@ export function ArticleGenerator() {
             <Button
               key={category}
               onClick={() => handleGenerate(category)}
-              disabled={loadingCategory !== null}
+              disabled={isLoading}
               className="capitalize"
             >
               {loadingCategory === category ? (

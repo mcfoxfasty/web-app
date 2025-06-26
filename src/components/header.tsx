@@ -2,19 +2,57 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { signOut } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { CATEGORIES, SITE_CONFIG } from '@/lib/config';
 import { cn } from '@/lib/utils';
-import { Menu, Newspaper } from 'lucide-react';
+import { Menu, Newspaper, User, LogIn, LogOut, Shield } from 'lucide-react';
+import { AuthProvider, useAuth } from '@/hooks/use-auth';
 
-export function Header() {
+function AuthAwareHeader() {
   const pathname = usePathname();
+  const { user, loading } = useAuth();
+  
+  const handleLogout = async () => {
+    await signOut(auth);
+  };
 
   const navLinks = CATEGORIES.map((category) => ({
     href: `/category/${category}`,
     label: category.charAt(0).toUpperCase() + category.slice(1),
   }));
+
+  const renderAuthButtons = () => {
+    if (loading) {
+      return <div className="h-10 w-20 animate-pulse rounded-md bg-muted" />;
+    }
+    if (user) {
+      return (
+        <>
+          <Button asChild variant="ghost" size="sm">
+            <Link href="/admin">
+              <Shield className="mr-2 h-4 w-4" />
+              Admin
+            </Link>
+          </Button>
+          <Button variant="outline" size="sm" onClick={handleLogout}>
+            <LogOut className="mr-2 h-4 w-4" />
+            Logout
+          </Button>
+        </>
+      );
+    }
+    return (
+      <Button asChild size="sm">
+        <Link href="/login">
+          <LogIn className="mr-2 h-4 w-4" />
+          Admin Login
+        </Link>
+      </Button>
+    );
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -43,6 +81,9 @@ export function Header() {
         </div>
 
         <div className="flex flex-1 items-center justify-end space-x-2">
+           <div className="hidden sm:flex items-center gap-2">
+            {renderAuthButtons()}
+          </div>
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" className="md:hidden">
@@ -51,7 +92,7 @@ export function Header() {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="pr-0">
-              <SheetTitle className="sr-only">Menu</SheetTitle>
+              <SheetTitle>Menu</SheetTitle>
               <SheetDescription className="sr-only">
                 The main navigation menu for the site.
               </SheetDescription>
@@ -73,6 +114,9 @@ export function Header() {
                     </Link>
                   ))}
                 </div>
+                 <div className="sm:hidden flex flex-col pt-4 border-t space-y-2">
+                  {renderAuthButtons()}
+                </div>
               </div>
             </SheetContent>
           </Sheet>
@@ -80,4 +124,13 @@ export function Header() {
       </div>
     </header>
   );
+}
+
+
+export function Header() {
+  return (
+    <AuthProvider>
+      <AuthAwareHeader />
+    </AuthProvider>
+  )
 }
