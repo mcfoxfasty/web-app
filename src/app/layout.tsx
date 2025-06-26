@@ -3,10 +3,28 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
+import { SITE_CONFIG } from '@/lib/config';
 
 export const metadata: Metadata = {
-  title: 'NewsAI - Your daily source for AI-curated news',
-  description: 'Your daily source for AI-curated news across business, finance, technology, sports, and politics.',
+  title: {
+    default: SITE_CONFIG.name,
+    template: `%s | ${SITE_CONFIG.name}`,
+  },
+  description: SITE_CONFIG.description,
+  openGraph: {
+    title: SITE_CONFIG.name,
+    description: SITE_CONFIG.description,
+    url: SITE_CONFIG.url,
+    siteName: SITE_CONFIG.name,
+    images: [{ url: `${SITE_CONFIG.url}${SITE_CONFIG.ogImage}` }],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: SITE_CONFIG.name,
+    description: SITE_CONFIG.description,
+    images: [`${SITE_CONFIG.url}${SITE_CONFIG.ogImage}`],
+  },
 };
 
 export default function RootLayout({

@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
         content: generatedContent.content,
         metaDescription: generatedContent.metaDescription,
         coverImage,
-        author: 'AI News' as const,
+        author: 'NewsRadar Staff' as const,
         affiliateLink,
         published: true, // Published by default
       };

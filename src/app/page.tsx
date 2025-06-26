@@ -12,10 +12,10 @@ export default async function HomePage() {
     <div className="container py-8">
       <div className="space-y-4 mb-8 text-center">
         <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
-          News, <span className="text-primary">Reimagined by AI</span>
+          Your Daily News Briefing
         </h1>
         <p className="max-w-[700px] mx-auto text-lg text-muted-foreground">
-          Welcome to NewsAI, your daily source for unique, SEO-optimized articles, automatically generated from the latest headlines.
+          Stay informed with the latest articles on business, technology, sports, and more.
         </p>
       </div>
       
