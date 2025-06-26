@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { getAuth } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { CATEGORIES, SITE_CONFIG } from '@/lib/config';
@@ -16,6 +16,7 @@ function AuthAwareHeader() {
   const { user, loading } = useAuth();
   
   const handleLogout = async () => {
+    const auth = getAuth();
     await signOut(auth);
   };
 
@@ -92,7 +93,7 @@ function AuthAwareHeader() {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="pr-0">
-              <SheetTitle>Menu</SheetTitle>
+              <SheetTitle className="sr-only">Menu</SheetTitle>
               <SheetDescription className="sr-only">
                 The main navigation menu for the site.
               </SheetDescription>

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { getAuth } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
@@ -42,6 +42,7 @@ export default function LoginPage() {
   const handleLogin = async () => {
     setLoading(true);
     const provider = new GoogleAuthProvider();
+    const auth = getAuth();
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;

@@ -1,6 +1,6 @@
-import { initializeApp, getApps, getApp, FirebaseOptions } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { initializeApp, getApps, getApp, FirebaseOptions, FirebaseApp } from "firebase/app";
+import { getFirestore, Firestore } from "firebase/firestore";
+import { getAuth, Auth } from "firebase/auth";
 
 const firebaseConfig: FirebaseOptions = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -11,9 +11,40 @@ const firebaseConfig: FirebaseOptions = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const db = getFirestore(app);
-const auth = getAuth(app);
+let app: FirebaseApp;
+let authInstance: Auth;
+let dbInstance: Firestore;
 
-export { db, auth };
+// This function ensures Firebase is initialized only once.
+function initializeFirebase() {
+  if (!getApps().length) {
+    if (!firebaseConfig.apiKey) {
+      // This error will be thrown at runtime if the env var is missing,
+      // but it won't crash the build process.
+      throw new Error('Firebase API key is not set. Please check your environment variables.');
+    }
+    app = initializeApp(firebaseConfig);
+    authInstance = getAuth(app);
+    dbInstance = getFirestore(app);
+  } else {
+    app = getApp();
+    authInstance = getAuth(app);
+    dbInstance = getFirestore(app);
+  }
+}
+
+// Export getter functions instead of direct instances.
+// This is the "lazy" part of the implementation.
+export function getAuth() {
+  if (!authInstance) {
+    initializeFirebase();
+  }
+  return authInstance;
+}
+
+export function getDb() {
+  if (!dbInstance) {
+    initializeFirebase();
+  }
+  return dbInstance;
+}

@@ -1,4 +1,4 @@
-import { db } from '@/lib/firebase';
+import { getDb } from '@/lib/firebase';
 import {
   collection,
   doc,
@@ -20,7 +20,7 @@ import type { Article } from '@/types';
 type NewArticle = Omit<Article, 'id' | 'createdAt' | 'updatedAt'>;
 type UpdateArticle = Partial<Omit<Article, 'id' | 'createdAt' | 'updatedAt' | 'author' | 'sourceHeadline'>>;
 
-const articlesCollection = collection(db, 'articles');
+const getArticlesCollection = () => collection(getDb(), 'articles');
 
 function fromFirestore(snapshot: QueryDocumentSnapshot<DocumentData>): Article {
   const data = snapshot.data();
@@ -35,7 +35,7 @@ function fromFirestore(snapshot: QueryDocumentSnapshot<DocumentData>): Article {
 class StorageManager {
   async saveArticle(articleData: NewArticle): Promise<Article> {
     const now = new Date();
-    const docRef = await addDoc(articlesCollection, {
+    const docRef = await addDoc(getArticlesCollection(), {
       ...articleData,
       createdAt: Timestamp.fromDate(now),
       updatedAt: Timestamp.fromDate(now),
@@ -46,7 +46,7 @@ class StorageManager {
   }
 
   async updateArticle(id: string, articleData: UpdateArticle): Promise<void> {
-    const docRef = doc(db, 'articles', id);
+    const docRef = doc(getDb(), 'articles', id);
     await updateDoc(docRef, {
       ...articleData,
       updatedAt: Timestamp.fromDate(new Date()),
@@ -54,12 +54,12 @@ class StorageManager {
   }
 
   async deleteArticle(id: string): Promise<void> {
-    const docRef = doc(db, 'articles', id);
+    const docRef = doc(getDb(), 'articles', id);
     await deleteDoc(docRef);
   }
 
   async getArticleById(id: string): Promise<Article | null> {
-    const docRef = doc(db, 'articles', id);
+    const docRef = doc(getDb(), 'articles', id);
     const docSnap = await getDoc(docRef);
     if (!docSnap.exists()) {
       return null;
@@ -68,7 +68,7 @@ class StorageManager {
   }
 
   async getArticleBySlug(slug: string): Promise<Article | null> {
-    const q = query(articlesCollection, where('slug', '==', slug), limit(1));
+    const q = query(getArticlesCollection(), where('slug', '==', slug), limit(1));
     const querySnapshot = await getDocs(q);
     if (querySnapshot.empty) {
       return null;
@@ -78,7 +78,7 @@ class StorageManager {
 
   async getArticlesByCategory(category: string, count: number = 10): Promise<Article[]> {
     const q = query(
-      articlesCollection,
+      getArticlesCollection(),
       where('category', '==', category),
       where('published', '==', true),
       orderBy('createdAt', 'desc'),
@@ -91,16 +91,16 @@ class StorageManager {
   async getAllArticles(includeUnpublished = false, count = 50): Promise<Article[]> {
     let q;
     if (includeUnpublished) {
-        q = query(articlesCollection, orderBy('createdAt', 'desc'), limit(count));
+        q = query(getArticlesCollection(), orderBy('createdAt', 'desc'), limit(count));
     } else {
-        q = query(articlesCollection, where('published', '==', true), orderBy('createdAt', 'desc'), limit(count));
+        q = query(getArticlesCollection(), where('published', '==', true), orderBy('createdAt', 'desc'), limit(count));
     }
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(fromFirestore);
   }
 
   async isDuplicateHeadline(headline: string): Promise<boolean> {
-    const q = query(articlesCollection, where('sourceHeadline', '==', headline), limit(1));
+    const q = query(getArticlesCollection(), where('sourceHeadline', '==', headline), limit(1));
     const querySnapshot = await getDocs(q);
     return !querySnapshot.empty;
   }
