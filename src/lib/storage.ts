@@ -18,7 +18,7 @@ import {
 import type { Article } from '@/types';
 
 type NewArticle = Omit<Article, 'id' | 'createdAt' | 'updatedAt'>;
-type UpdateArticle = Partial<Omit<Article, 'id' | 'createdAt' | 'updatedAt' | 'author'>>;
+type UpdateArticle = Partial<Omit<Article, 'id' | 'createdAt' | 'updatedAt' | 'author' | 'sourceHeadline'>>;
 
 const articlesCollection = collection(db, 'articles');
 
@@ -97,6 +97,12 @@ class StorageManager {
     }
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(fromFirestore);
+  }
+
+  async isDuplicateHeadline(headline: string): Promise<boolean> {
+    const q = query(articlesCollection, where('sourceHeadline', '==', headline), limit(1));
+    const querySnapshot = await getDocs(q);
+    return !querySnapshot.empty;
   }
 }
 

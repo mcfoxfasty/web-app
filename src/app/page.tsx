@@ -1,4 +1,3 @@
-import { ArticleGenerator } from '@/components/article-generator';
 import { ArticleCard } from '@/components/article-card';
 import { CategoryPills } from '@/components/category-pills';
 import { storage } from '@/lib/storage';
@@ -11,20 +10,16 @@ export default async function HomePage() {
 
   return (
     <div className="container py-8">
-      <div className="space-y-4 mb-8">
+      <div className="space-y-4 mb-8 text-center">
         <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
           News, <span className="text-primary">Reimagined by AI</span>
         </h1>
-        <p className="max-w-[700px] text-lg text-muted-foreground">
-          Welcome to NewsAI. Instantly generate unique, SEO-optimized articles from the latest headlines across various categories.
+        <p className="max-w-[700px] mx-auto text-lg text-muted-foreground">
+          Welcome to NewsAI, your daily source for unique, SEO-optimized articles, automatically generated from the latest headlines.
         </p>
       </div>
-
-      <div className="mb-8">
-        <ArticleGenerator />
-      </div>
       
-      <div className="mb-8">
+      <div className="mb-8 flex justify-center">
         <CategoryPills />
       </div>
 
@@ -40,7 +35,7 @@ export default async function HomePage() {
           <div className="text-center py-16 border-2 border-dashed rounded-lg">
             <h3 className="text-xl font-semibold">No Articles Yet</h3>
             <p className="text-muted-foreground mt-2">
-              Generate your first article above to see it appear here.
+              The automated system has not generated any articles yet. Check back soon!
             </p>
           </div>
         )}

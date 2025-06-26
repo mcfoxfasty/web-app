@@ -2,6 +2,7 @@ export type Article = {
   id: string;
   title: string;
   slug: string;
+  sourceHeadline: string; // The original headline from the news source for deduplication
   category: string;
   content: string; // HTML content
   metaDescription: string;
