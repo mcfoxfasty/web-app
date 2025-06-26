@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { CATEGORIES, SITE_CONFIG } from '@/lib/config';
 import { cn } from '@/lib/utils';
 import { Menu, Newspaper } from 'lucide-react';
@@ -51,6 +51,10 @@ export function Header() {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="pr-0">
+              <SheetTitle className="sr-only">Menu</SheetTitle>
+              <SheetDescription className="sr-only">
+                The main navigation menu for the site.
+              </SheetDescription>
               <Link href="/" className="mr-6 flex items-center space-x-2">
                 <Newspaper className="h-6 w-6 text-primary" />
                 <span className="font-bold font-headline sm:inline-block">
