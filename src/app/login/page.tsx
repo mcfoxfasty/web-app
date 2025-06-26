@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
 import { getAuth } from '@/lib/firebase';
@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const GoogleIcon = () => (
     <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -29,11 +30,11 @@ const GoogleIcon = () => (
       />
       <path d="M0 0h24v24H0z" fill="none" />
     </svg>
-  )
+  );
 
 const ADMIN_EMAIL = 'mcfoxfasty@gmail.com';
 
-export default function LoginPage() {
+function LoginCard() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -70,25 +71,47 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
-
+  
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/40">
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">Admin Login</CardTitle>
-          <CardDescription>Use your Google account to access the dashboard.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button onClick={handleLogin} className="w-full" disabled={loading}>
-            {loading ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <GoogleIcon />
-            )}
-            Sign in with Google
-          </Button>
-        </CardContent>
-      </Card>
-    </div>
+    <Card className="w-full max-w-sm">
+      <CardHeader>
+        <CardTitle className="text-2xl">Admin Login</CardTitle>
+        <CardDescription>Use your Google account to access the dashboard.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Button onClick={handleLogin} className="w-full" disabled={loading}>
+          {loading ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <GoogleIcon />
+          )}
+          Sign in with Google
+        </Button>
+      </CardContent>
+    </Card>
   );
+}
+
+function LoginCardSkeleton() {
+    return (
+        <Card className="w-full max-w-sm">
+            <CardHeader>
+                <Skeleton className="h-8 w-3/4" />
+                <Skeleton className="h-4 w-full" />
+            </CardHeader>
+            <CardContent>
+                <Skeleton className="h-10 w-full" />
+            </CardContent>
+        </Card>
+    )
+}
+
+export default function LoginPage() {
+    return (
+        <div className="flex min-h-screen items-center justify-center bg-muted/40">
+            <Suspense fallback={<LoginCardSkeleton />}>
+                <LoginCard />
+            </Suspense>
+        </div>
+    );
 }
