@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 import type { Article } from '@/types';
-import { updateArticleAction } from '@/app/(admin)/actions';
+import { updateArticleAction } from '@/app/actions';
 import { CATEGORIES } from '@/lib/config';
 
 import { Button } from '@/components/ui/button';

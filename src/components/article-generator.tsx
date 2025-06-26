@@ -6,7 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Wand2 } from 'lucide-react';
 import { CATEGORIES } from '@/lib/config';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { generateArticleAction } from '@/app/(admin)/actions';
+import { generateArticleAction } from '@/app/actions';
 
 export function ArticleGenerator() {
   const [loadingCategory, setLoadingCategory] = useState<string | null>(null);
