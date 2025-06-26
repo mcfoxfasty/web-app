@@ -9,7 +9,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from 
 import { CATEGORIES, SITE_CONFIG } from '@/lib/config';
 import { cn } from '@/lib/utils';
 import { Menu, Newspaper, User, LogIn, LogOut, Shield } from 'lucide-react';
-import { AuthProvider, useAuth } from '@/hooks/use-auth';
+import { useAuth } from '@/hooks/use-auth';
 
 function AuthAwareHeader() {
   const pathname = usePathname();
@@ -129,8 +129,6 @@ function AuthAwareHeader() {
 
 export function Header() {
   return (
-    <AuthProvider>
-      <AuthAwareHeader />
-    </AuthProvider>
+    <AuthAwareHeader />
   )
 }

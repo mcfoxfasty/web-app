@@ -39,3 +39,7 @@ export const useAuth = () => {
     }
     return context;
 };
+
+export function AppProviders({ children }: { children: React.ReactNode }) {
+  return <AuthProvider>{children}</AuthProvider>;
+}

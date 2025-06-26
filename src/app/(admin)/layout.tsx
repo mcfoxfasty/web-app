@@ -1,10 +1,9 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { AuthProvider, useAuth } from '@/hooks/use-auth';
+import { useAuth } from '@/hooks/use-auth';
 import { Loader2 } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
-import { AdminHeader } from '@/components/admin/header';
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -19,24 +18,19 @@ function RequireAuth({ children }: { children: React.ReactNode }) {
 
   if (loading || !user) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-background">
+      <div className="flex h-screen w-full items-center justify-center bg-muted/40">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
       </div>
     );
   }
 
-  return (
-      <div className="flex min-h-screen flex-col">
-        <AdminHeader />
-        <main className="flex-1 bg-muted/40">{children}</main>
-      </div>
-  )
+  // RootLayout already provides the header and main content structure
+  return <div className="bg-muted/40">{children}</div>;
 }
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  // The AuthProvider is now in the root layout, so we just need to require auth here.
   return (
-    <AuthProvider>
       <RequireAuth>{children}</RequireAuth>
-    </AuthProvider>
   );
 }
