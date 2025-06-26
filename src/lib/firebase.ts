@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp, FirebaseOptions, FirebaseApp } from "firebase/app";
 import { getFirestore, Firestore } from "firebase/firestore";
-import { getAuth, Auth } from "firebase/auth";
+import { getAuth as getFirebaseAuth, Auth } from "firebase/auth";
 
 const firebaseConfig: FirebaseOptions = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -24,11 +24,11 @@ function initializeFirebase() {
       throw new Error('Firebase API key is not set. Please check your environment variables.');
     }
     app = initializeApp(firebaseConfig);
-    authInstance = getAuth(app);
+    authInstance = getFirebaseAuth(app);
     dbInstance = getFirestore(app);
   } else {
     app = getApp();
-    authInstance = getAuth(app);
+    authInstance = getFirebaseAuth(app);
     dbInstance = getFirestore(app);
   }
 }
