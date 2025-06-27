@@ -3,6 +3,7 @@ import { ArticleListClient } from '@/components/admin/article-list-client';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal } from 'lucide-react';
+import { ArticleGenerator } from '@/components/article-generator';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,18 +16,20 @@ export default async function AdminPage() {
       
       <Alert>
         <Terminal className="h-4 w-4" />
-        <AlertTitle>Automated Content Pipeline</AlertTitle>
+        <AlertTitle>Content Pipeline</AlertTitle>
         <AlertDescription>
-          This system automatically generates and publishes new articles daily. 
-          Use the content management table below to review, edit, or unpublish any generated content.
+          Generate new articles on-demand or manage existing content below. 
+          Generated articles are saved as drafts and can be published from the edit screen.
         </AlertDescription>
       </Alert>
+
+      <ArticleGenerator />
 
       <Card>
         <CardHeader>
           <CardTitle>Content Management</CardTitle>
           <CardDescription>
-            Here you can view, edit, and delete all articles. Articles are generated automatically.
+            Here you can view, edit, and publish all articles.
           </CardDescription>
         </CardHeader>
         <CardContent>
