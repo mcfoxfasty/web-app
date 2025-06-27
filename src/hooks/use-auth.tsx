@@ -1,46 +1,25 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { onAuthStateChanged, User } from 'firebase/auth';
-import { getAuth } from '@/lib/firebase';
+// This is a stub file to prevent build errors after removing authentication.
+// The original authentication logic has been removed.
+
+import type { User } from 'firebase/auth';
+import React, { createContext, useContext } from 'react';
 
 type AuthContextType = {
   user: User | null;
   loading: boolean;
 };
 
-const AuthContext = createContext<AuthContextType>({ user: null, loading: true });
+// Provide a default, non-functional context value.
+const AuthContext = createContext<AuthContextType>({ user: null, loading: false });
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
-    });
-
-    // Cleanup subscription on unmount
-    return () => unsubscribe();
-  }, []);
-
-  return (
-    <AuthContext.Provider value={{ user, loading }}>
-      {children}
-    </AuthContext.Provider>
-  );
+// AppProviders now just passes children through without any auth provider.
+export const AppProviders = ({ children }: { children: React.ReactNode }) => {
+    return <>{children}</>;
 };
 
+// The useAuth hook now returns a static "logged out" state.
 export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (context === undefined) {
-        throw new Error('useAuth must be used within an AuthProvider');
-    }
-    return context;
+    return { user: null, loading: false };
 };
-
-export function AppProviders({ children }: { children: React.ReactNode }) {
-  return <AuthProvider>{children}</AuthProvider>;
-}

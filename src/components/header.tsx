@@ -2,58 +2,99 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { signOut } from 'firebase/auth';
-import { getAuth } from '@/lib/firebase';
+import { useState, useTransition } from 'react';
+
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
 import { CATEGORIES, SITE_CONFIG } from '@/lib/config';
 import { cn } from '@/lib/utils';
-import { Menu, Newspaper, User, LogIn, LogOut, Shield } from 'lucide-react';
-import { useAuth } from '@/hooks/use-auth';
+import { useToast } from '@/hooks/use-toast';
+import { generateArticleAction } from '@/app/actions';
 
-function AuthAwareHeader() {
-  const pathname = usePathname();
-  const { user, loading } = useAuth();
-  
-  const handleLogout = async () => {
-    const auth = getAuth();
-    await signOut(auth);
+import { Menu, Newspaper, Shield, Wand2, Loader2 } from 'lucide-react';
+
+
+function ArticleGeneratorDropdown() {
+  const [loadingCategory, setLoadingCategory] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
+  const { toast } = useToast();
+
+  const handleGenerate = async (category: string) => {
+    setLoadingCategory(category);
+    startTransition(async () => {
+      const result = await generateArticleAction(category);
+      if (result.success) {
+        toast({
+          title: 'Article Generated!',
+          description: `New article "${result.article?.title}" has been created as a draft.`,
+        });
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Generation Failed',
+          description: result.error,
+        });
+      }
+      setLoadingCategory(null);
+    });
   };
+  
+  const isLoading = isPending || loadingCategory !== null;
+
+  return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="sm" disabled={isLoading}>
+            {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+            Generate Article
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Select a Category</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {CATEGORIES.map((category) => (
+            <DropdownMenuItem key={category} onClick={() => handleGenerate(category)} disabled={isLoading} className="capitalize cursor-pointer">
+                {loadingCategory === category ? 
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 
+                    <Wand2 className="mr-2 h-4 w-4" />
+                }
+                <span>Generate {category}</span>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+  )
+}
+
+
+export function Header() {
+  const pathname = usePathname();
 
   const navLinks = CATEGORIES.map((category) => ({
     href: `/category/${category}`,
     label: category.charAt(0).toUpperCase() + category.slice(1),
   }));
 
-  const renderAuthButtons = () => {
-    if (loading) {
-      return <div className="h-10 w-20 animate-pulse rounded-md bg-muted" />;
-    }
-    if (user) {
-      return (
-        <>
-          <Button asChild variant="ghost" size="sm">
-            <Link href="/admin">
-              <Shield className="mr-2 h-4 w-4" />
-              Admin
-            </Link>
-          </Button>
-          <Button variant="outline" size="sm" onClick={handleLogout}>
-            <LogOut className="mr-2 h-4 w-4" />
-            Logout
-          </Button>
-        </>
-      );
-    }
-    return (
-      <Button asChild size="sm">
-        <Link href="/login">
-          <LogIn className="mr-2 h-4 w-4" />
-          Admin Login
-        </Link>
-      </Button>
-    );
-  }
+  const renderButtons = () => (
+      <div className="flex items-center gap-2">
+        <ArticleGeneratorDropdown />
+        <Button asChild variant="ghost" size="sm">
+          <Link href="/admin">
+            <Shield className="mr-2 h-4 w-4" />
+            Admin
+          </Link>
+        </Button>
+      </div>
+  );
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -83,7 +124,7 @@ function AuthAwareHeader() {
 
         <div className="flex flex-1 items-center justify-end space-x-2">
            <div className="hidden sm:flex items-center gap-2">
-            {renderAuthButtons()}
+            {renderButtons()}
           </div>
           <Sheet>
             <SheetTrigger asChild>
@@ -116,7 +157,7 @@ function AuthAwareHeader() {
                   ))}
                 </div>
                  <div className="sm:hidden flex flex-col pt-4 border-t space-y-2">
-                  {renderAuthButtons()}
+                  {renderButtons()}
                 </div>
               </div>
             </SheetContent>
@@ -125,11 +166,4 @@ function AuthAwareHeader() {
       </div>
     </header>
   );
-}
-
-
-export function Header() {
-  return (
-    <AuthAwareHeader />
-  )
 }

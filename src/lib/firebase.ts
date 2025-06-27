@@ -1,6 +1,5 @@
 import { initializeApp, getApps, getApp, FirebaseOptions, FirebaseApp } from "firebase/app";
 import { getFirestore, Firestore } from "firebase/firestore";
-import { getAuth as getFirebaseAuth, Auth } from "firebase/auth";
 
 const firebaseConfig: FirebaseOptions = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -12,7 +11,6 @@ const firebaseConfig: FirebaseOptions = {
 };
 
 let app: FirebaseApp;
-let authInstance: Auth;
 let dbInstance: Firestore;
 
 // This function ensures Firebase is initialized only once.
@@ -24,24 +22,14 @@ function initializeFirebase() {
       throw new Error('Firebase API key is not set. Please check your environment variables.');
     }
     app = initializeApp(firebaseConfig);
-    authInstance = getFirebaseAuth(app);
     dbInstance = getFirestore(app);
   } else {
     app = getApp();
-    authInstance = getFirebaseAuth(app);
     dbInstance = getFirestore(app);
   }
 }
 
 // Export getter functions instead of direct instances.
-// This is the "lazy" part of the implementation.
-export function getAuth() {
-  if (!authInstance) {
-    initializeFirebase();
-  }
-  return authInstance;
-}
-
 export function getDb() {
   if (!dbInstance) {
     initializeFirebase();
