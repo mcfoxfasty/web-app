@@ -2,7 +2,8 @@
   "crons": [
     {
       "path": "/api/cron/generate-articles",
-      "schedule": "0 8 * * *"
+      "schedule": "0 8 * * *",
+      "method": "POST"
     }
   ]
 }
