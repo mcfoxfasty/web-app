@@ -8,7 +8,7 @@ import { generateArticle } from '@/ai/flows/generate-article';
 
 export const dynamic = 'force-dynamic';
 
-export async function POST(request: NextRequest) {
+export async function GET(request: NextRequest) {
   const cronSecret = request.headers.get('x-vercel-cron-secret');
   if (cronSecret !== process.env.CRON_VERCEL_SECRET) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
